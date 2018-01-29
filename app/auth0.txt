@@ -1,0 +1,120 @@
+Steps to integrate auth0
+
+1A) Add auth0 to the bower.json
+    "auth0-lock": "^10.24.0",
+    "auth0.js": "^8.11.2",
+    "auth0-lock-passwordless": "^2.2.3"
+
+1B) Add ember-simple-auth-auth0 to package.json
+    run  "ember install ember-simple-auth-auth0" from command line
+
+    (note, due to some bug I had to ember install webpack in the ember root directory to get this to work)
+
+2A) Run "bower install" from command line to install the packages
+2B) Run "npm install" from command line
+
+3) Edit the environment.js, add the following
+    'ember-simple-auth': {
+      authenticationRoute: 'login',
+      routeAfterAuthentication: '<Config User>',
+      routeIfAlreadyAuthenticated: '<Main App>',
+      auth0: {
+        clientID: 'EUXzX6p1Y06iSHQjvSFr0Zpq5mHVizEx',
+        domain: 'esg-candidates.auth0.com'
+      }
+    },
+
+    contentSecurityPolicy: {
+      'font-src': "'self' fonts.gstatic.com",
+      'style-src': "'self' fonts.googleapis.com",
+      'script-src': "'self' 'unsafe-eval' apis.google.com",
+      'frame-src': "'self' https://*.firebaseapp.com",
+      'connect-src': "'self' wss://*.firebaseio.com https://*.googleapis.com"
+    },
+
+  if (environment === 'development') {
+    ENV['ember-simple-auth']['auth0']['clientID'] = '<ID HERE>';
+
+  if (environment === 'production') {
+    ENV['ember-simple-auth']['auth0']['clientID'] = '<ID HERE>';
+
+4) Add index route to take user to login page
+import Ember from 'ember';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+
+export default Ember.Route.extend(AuthenticatedRouteMixin, {
+  beforeModel() {
+      this.transitionTo("<application>");
+  },
+});
+
+5) Set up index in router.js
+  this.route('index',{'path': '/'});
+
+6) Set up a user session if there is not one.  Used to store any user specific info/permissions for the rest of the app.
+    cmd line "ember generate service user"
+
+7) Add user-login component
+import Ember from 'ember';
+const {
+  Component,
+  get } = Ember;
+
+export default Component.extend({
+  session: Ember.inject.service(),
+
+  didInsertElement() {
+    this._super(...arguments);
+    const lockOptions = {
+      container: 'login-container',
+      auth: {
+        params: {
+          scope: 'openid user_metadata'
+        }
+      }
+    };
+    get(this, 'session').authenticate('authenticator:auth0-lock', lockOptions);
+  },
+
+});
+
+template:
+<div class="auth-wrapper" id="login-container">
+  {{!-- the auth0 login container is injected here after the component is rendered. --}}
+</div>
+
+8) Add an autheticator (application.js)
+cmd line "ember generate authenticator application"
+
+code is:
+import Lock from 'ember-simple-auth-auth0/authenticators/auth0-lock';
+
+export default Lock.extend();
+
+9) Add Login with Google to the login screen template
+{{user-login}}
+
+10) Go to auth0 site and add callback (example below)
+http://localhost:4200/login, http://aneil-newton.s3-website-us-east-1.amazonaws.com/,
+http://localhost:4200/*, http://localhost:4200/,
+http://esg-authtest.s3-website.us-east-2.amazonaws.com/login
+
+11) Add the Unauthenticated Route Mixin to the login route:
+import UnauthenticatedRouteMixin from 'ember-simple-auth/mixins/unauthenticated-route-mixin';
+export default Ember.Route.extend(UnauthenticatedRouteMixin, {
+
+12) Add the Authenticated route mixin to all the protected routes
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+export default Ember.Route.extend(AuthenticatedRouteMixin,{
+
+13)Add the Application route mixin to application route
+import Ember from 'ember';
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+
+export default Ember.Route.extend(ApplicationRouteMixin,{
+  actions: {
+  }
+});
+
+This will have the app route to <Config User> from step 3 after authentication happens.
+If there is no config needed, just send it to the main app.

@@ -5,6 +5,13 @@ module.exports = function(environment) {
   let ENV = {
     modulePrefix: 'employee',
     environment,
+    firebase: {
+      apiKey: "AIzaSyDQjmJm1pIDsEwdO9GFqEWlN1oIDMUpepc",
+      authDomain: "jobcodes2.firebaseapp.com",
+      databaseURL: "https://jobcodes2.firebaseio.com",
+      storageBucket: "jobcodes2.appspot.com",
+      messagingSenderId: "679649937612"
+    },
     rootURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -17,6 +24,9 @@ module.exports = function(environment) {
         Date: false
       }
     },
+    aneil_pw:'aneil00',
+    john_pw:process.env.PW_JRP,
+    acct_pw:process.env.PW_ACCT,
 
     APP: {
       // Here you can pass flags/options to your application instance
@@ -30,6 +40,15 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.contentSecurityPolicy = {
+      'default-src': "'none'",
+      'script-src': "'self' 'unsafe-inline'",
+      'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
+      'font-src': "'self' fonts.gstatic.com",
+      'connect-src': "'self'",
+      'img-src': "'self' data:",
+      'media-src': "'self'"
+    };
   }
 
   if (environment === 'test') {
@@ -44,6 +63,15 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
+    ENV.contentSecurityPolicy = {
+      'default-src': "'none'",
+      'script-src': "'self' 'unsafe-inline'",
+      'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
+      'font-src': "'self' fonts.gstatic.com",
+      'connect-src': "'self'",
+      'img-src': "'self' data:",
+      'media-src': "'self'"
+    };
 
   }
 

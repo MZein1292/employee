@@ -1,0 +1,224 @@
+{{outlet}}
+<h3>Jobcodes
+{{#paper-button raised=true primary=true onClick=(action 'new')}}Add New Jobcode{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'refresh')}}Refresh Data{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'rev')}}Reverse Sort{{/paper-button}}
+{{#if user.isAdmin}}
+  {{#paper-button raised=true onClick=(action 'toggleDelete')}}
+    {{if allowDelete 'Disable Delete' 'Allow Delete'}}{{/paper-button}}
+  {{#paper-button raised=true onClick=(action 'test')}}Test{{/paper-button}}
+{{/if}}
+</h3>
+{{#if (eq showDlg "EDIT")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit {{title}}</h2>
+      {{#if (eq title 'Comment')}}
+        {{textarea value=dlgData  rows="4" cols='80' onChange=(action (mut dlgData))}}
+      {{/if}}
+      {{#if (not-eq title 'Comment')}}
+        {{paper-input placeholder=title autofocus=true value=dlgData onChange=(action (mut dlgData))}}
+      {{/if}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+{{#if (eq showDlg "DROPDOWN")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit {{title}}</h2>
+      {{#paper-select
+        getItems=onUserLoad label=title options=dlgDropdown selected=dlgData onChange=(action (mut dlgData)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+<table>
+  <tr>
+    <td>
+      Filters:
+    </td>
+    <td>
+      {{#paper-select
+        getItems=onUserLoad label="Status" options=statuses2 selected=statusFilter onChange=(action (mut statusFilter)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="Type" options=types2 selected=typeFilter onChange=(action (mut typeFilter)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="Manager" options=managers2 selected=mgrFilter onChange=(action (mut mgrFilter)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="SortBy" options=sortItems selected=sortby onChange=(action (mut sortby)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="View" options=viewTypeList selected=viewStyle onChange=(action (mut viewStyle)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+    </td>
+  </tr>
+</table>
+<br>
+{{#if (eq showDlg "NONE")}}
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Jobcode</th>
+      <th>Description</th>
+      <th>Manager</th>
+      <th>Employee</th>
+      <th>FCA Contact</th>
+      <th>FCA Org</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Lead</th>
+      {{#if allowDelete}}
+        <th>Delete</th>
+      {{/if}}
+    </tr>
+
+    {{#each filtered as |data index|}}
+      <tr>
+        <td>{{addone index}}</td>
+        <td {{action 'editDlg' "jobcode" data}}>{{data.jobcode}}</td>
+        <td {{action 'editDlg' "description" data}}>{{data.description}}</td>
+        <td {{action 'editDlg' "manager" data}}>{{data.manager}}</td>
+        <td {{action 'editDlg' "employee" data}}>{{data.employee}}</td>
+        <td {{action 'editDlg' "contact" data}}>{{data.contact}}</td>
+        <td {{action 'editDlg' "org" data}}>{{data.org}}</td>
+        <td {{action 'editDlg' "status" data}}>{{data.status}}</td>
+        <td {{action 'editDlg' "type" data}}>{{data.type}}</td>
+        <td {{action 'editDlg' "lead" data}}>{{data.lead}}</td>
+        {{#if allowDelete}}
+          <th><Button>Delete</Button></th>
+        {{/if}}
+      </tr>
+    {{else}}
+      ERROR: Can't find any data<br>
+    {{/each}}
+
+  </table>
+  <br><br><br><br><br><br><br><br>
+
+    <!--
+<br><br>
+OLD TABLE
+<br><br>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>BLE</th>
+        <th>Customer</th>
+        <th>Contact</th>
+        <th>Lead Date</th>
+      {{#if (eq viewStyle 'STD')}}
+        <th>Description</th>
+        <th>Edit</th>
+        <th>Comment / Next Steps</th>
+        {{#if allowDelete}}
+          <th>Delete</th>
+        {{/if}}
+  {{/if}}
+  {{#if (eq viewStyle 'COST')}}
+          <th>#Eng</th>
+          <th>Value</th>
+          <th>Prob</th>
+          <th>Type</th>
+      {{/if}}
+
+    </tr>
+
+  {{#each filtered as |data index|}}
+      <tr>
+          <td>{{addone index}}</td>
+          <td {{action 'editDlg' "status" data}}>{{data.status}}</td>
+          <td {{action 'editDlg' "ble" data}}>{{data.ble}}</td>
+          <td>{{data.customer}}</td>
+          <td {{action 'editDlg' "contact" data}}>{{data.contact}}</td>
+          <td>{{data.date}}</td>
+      {{#if (eq viewStyle 'STD')}}
+          <td {{action 'editDlg' "description" data}}>{{data.description}}</td>
+          <td>{{#link-to 'edit-sale' data}}Edit{{/link-to}}</td>
+          <td {{action 'editDlg' "comment" data}}>{{data.comment}}</td>
+          {{#if allowDelete}}
+            <td><button {{action 'delete' data}}>Delete</button></td>
+          {{/if}}
+  {{/if}}
+  {{#if (eq viewStyle 'COST')}}
+            <td>{{data.qty}}</td>
+            <td>${{data.value}}</td>
+            <td>{{data.probability}}%</td>
+            <td>{{data.type}}</td>
+        {{/if}}
+
+      </tr>
+  {{else}}
+    ERROR: Can't find any data<br>
+  {{/each}}
+
+{{/if}}
+
+<!--
+<br><br>
+PAPER TABLE
+<br><br>
+
+{{#paper-data-table selectable=true stickyHeaders=false as |table|}}
+  {{#table.head as |head|}}
+    {{#head.column checkbox=true}}
+      {{#paper-checkbox disabled=true onChange=null}}{{/paper-checkbox}}
+    {{/head.column}}
+    {{#head.column sortProp="idx"}}idx{{/head.column}}
+    {{#head.column sortProp="status" numeric=false}}status{{/head.column}}
+    {{#head.column sortProp="desc" numeric=false}}description{{/head.column}}
+    {{#head.column sortProp="BLE" numeric=false}}BLE{{/head.column}}
+    {{#head.column sortProp="comment" numeric=false}}comment{{/head.column}}
+  {{/table.head}}
+  {{#table.body as |body|}}
+    {{#each model as |data index|}}
+      {{#body.row as |row|}}
+        {{#row.cell checkbox=true}}
+          {{#paper-checkbox value=item.checked onChange=(action (mut item.checked))}}{{/paper-checkbox}}
+        {{/row.cell}}
+        {{#row.cell}}{{addone index}}{{/row.cell}}
+        {{#row.cell numeric=false}}{{data.status}}{{/row.cell}}
+        {{#row.cell numeric=false}}{{data.description}}{{/row.cell}}
+        {{#row.cell numeric=false}}{{data.ble}}{{/row.cell}}
+        {{#row.cell numeric=false}}{{data.comment}}{{/row.cell}}
+      {{/body.row}}
+    {{/each}}
+  {{/table.body}}
+{{/paper-data-table}}
+-->

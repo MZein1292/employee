@@ -1,0 +1,12 @@
+<H1>Jobcode Website Content</H1>
+<H3>{{#link-to 'jobcode'}}Jobcodes{{/link-to}}</H3>
+<H3>{{#link-to 'employee'}}Employee{{/link-to}}</H3>
+<H3>{{#link-to 'ex-employee'}}Ex Employee{{/link-to}}</H3>
+<H3>{{#link-to 'empstats'}}Employee Stats{{/link-to}}</H3>
+<H3>{{#link-to 'overtime'}}Overtime/Intl Travel{{/link-to}}</H3>
+<H3>----------------------------------</H3>
+{{#if user.isAdmin}}
+  <H3>{{#link-to 'stratgoals'}}Strategic Goals{{/link-to}}</H3>
+  <H3>{{#link-to 'movetoex'}}Move Employee to Ex-Employee{{/link-to}}</H3>
+  <H3>{{#link-to 'empbyday'}}Employees by Day{{/link-to}}</H3>
+{{/if}}

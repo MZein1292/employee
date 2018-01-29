@@ -1,5 +1,47 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
-
+{{! without contextual components }}
+{{#paper-toolbar}}
+  {{#paper-toolbar-tools}}
+    {{#paper-button iconButton=true onClick=(action "menu")}}
+      {{paper-icon "menu"}}
+    {{/paper-button}}
+    <H1>Jobcode Database (c)2018 Shahman Ver 0.20 Jan 28 [{{user.user}}]</H1>
+    <span class="flex"></span>
+    {{#paper-button raised=true onClick=(action "goto" 'employee')}}
+      Employees
+    {{/paper-button}}
+    {{#paper-button raised=true onClick=(action "goto" 'ex-employee')}}
+      Ex-Employees
+    {{/paper-button}}
+    {{#paper-button raised=true onClick=(action "goto" 'empbyday')}}
+      EMP-BY-DAY
+    {{/paper-button}}
+    {{#paper-button raised=true onClick=(action "goto" 'overtime')}}
+      Overtime
+    {{/paper-button}}
+    {{#paper-button raised=true onClick=(action "goto" 'jobcode')}}
+      Jobcodes
+    {{/paper-button}}
+    {{#if user.isAuthenticated}}
+    {{#paper-button raised=true onClick=(action "logout")}}
+        Logout
+    {{/paper-button}}
+    {{else}}
+      {{#paper-button raised=true onClick=(action "goto" "login")}}
+          Login
+      {{/paper-button}}
+    {{/if}}
+    {{#paper-button iconButton=true onClick=(action 'goto' "issues")}}
+      {{paper-icon "report problem"}}
+      {{#tooltip-on-component enableLazyRendering=true}}
+        Issue Tracker
+      {{/tooltip-on-component}}
+    {{/paper-button}}
+    {{#paper-button iconButton=true onClick=(action "favorite")}}
+      {{paper-icon "favorite"}}
+    {{/paper-button}}
+    {{#paper-button iconButton=true onClick=(action "more")}}
+      {{paper-icon "more_vert"}}
+    {{/paper-button}}
+  {{/paper-toolbar-tools}}
+{{/paper-toolbar}}
 {{outlet}}

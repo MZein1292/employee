@@ -1,0 +1,139 @@
+{{outlet}}
+{{#if user.isAdmin}}
+    Admin Functions:
+    <button {{action 'toggleDelete'}}>{{if allowDelete 'Disable Delete' 'Allow Delete'}}</button>
+    <button {{action 'test'}}>Test</button><br>
+{{/if}}
+
+<button {{action 'new'}}>Add New Issue</button>
+<button {{action 'refresh'}}>Refresh</button>&emsp;
+
+{{#if (eq showDlg "EDIT")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+        <h2 class="md-title">Edit {{title}}</h2>
+        {{#if (or (eq title 'Comment') (eq title 'Description'))}}
+          {{textarea value=dlgData  rows="8" cols='100' onChange=(action (mut dlgData))}}
+        {{else}}
+          {{paper-input placeholder=title autofocus=true value=dlgData onChange=(action (mut dlgData))}}
+        {{/if}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+        <span class="flex"></span>
+        {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+        {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+{{#if (eq showDlg "DROPDOWN")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+        <h2 class="md-title">Edit {{title}}</h2>
+        {{#paper-select
+          getItems=onUserLoad placeholder=title value=dlgData onChange=(action (mut dlgData))
+        }}
+          {{#each dlgDropdown as |item|}}
+            {{#paper-option value=item}}
+              {{item}}
+            {{/paper-option}}
+          {{/each}}
+        {{/paper-select}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+        <span class="flex"></span>
+        {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+        {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+{{#if (eq showDlg "NEW")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+        <h2 class="md-title">Add New Issue</h2>
+        {{#paper-select
+          getItems=onUserLoad placeholder='Owner' value=newOwner onChange=(action (mut newOwner))
+        }}
+          {{#each owners as |item|}}
+            {{#paper-option value=item}}
+              {{item}}
+            {{/paper-option}}
+          {{/each}}
+        {{/paper-select}}<br>
+        {{paper-input placeholder='Issue Name' autofocus=true value=newName onChange=(action (mut newName))}}<br>
+        {{textarea value=newDescription  rows="8" cols='100' onChange=(action (mut newDescription))}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+        <span class="flex"></span>
+        {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+        {{#paper-button primary=true onClick=(action "saveIssue")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+  {{#paper-select
+    getItems=onUserLoad
+    placeholder="Status"
+    value=statusFilter
+    onChange=(action 'updateFilter' 'statusFilter')
+  }}
+    {{#paper-option value="ALL"}}ALL{{/paper-option}}
+    {{paper-divider}}
+    {{#each statuses as |item|}}
+      {{#paper-option value=item}}
+        {{item}}
+      {{/paper-option}}
+    {{/each}}
+  {{/paper-select}}
+
+<h2>Website Issues</h2>
+
+{{#if (eq showDlg "NONE")}}
+<table>
+    <tr>
+        <th>#</th>
+        <th>Issue</th>
+        <th>Date</th>
+        <th>Age</th>
+        <th>Status</th>
+        <th>Owner</th>
+        <th>Description</th>
+        <th>Comment</th>
+      {{#if allowDelete}}
+          <th>Delete</th>
+      {{/if}}
+    </tr>
+
+  {{#each filtered as |data index|}}
+      <tr>
+          <td>{{addone index}}</td>
+          <td {{action 'editDlg' "name" data}}>{{data.name}}</td>
+          <td>{{data.date}}</td>
+          <td>{{data.age}}</td>
+        {{#if user.isAdmin}}
+            <td {{action 'editDlg' "status" data}}>{{data.status}}</td>
+        {{/if}}
+        {{#if (not user.isAdmin)}}
+            <td>{{data.status}}</td>
+        {{/if}}
+          <td>{{data.owner}}</td>
+          <td {{action 'editDlg' "description" data}}>{{data.description}}</td>
+          <td {{action 'editDlg' "comment" data}}>{{data.comment}}</td>
+        {{#if allowDelete}}
+            <th><button {{action 'delete' data}}>Delete</button></th>
+        {{/if}}
+      </tr>
+  {{else}}
+      no data<br>
+  {{/each}}
+
+</table>
+{{/if}}
+<br><br><br><br><br>

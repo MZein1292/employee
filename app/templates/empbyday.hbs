@@ -1,0 +1,178 @@
+{{outlet}}
+{{#paper-button raised=true primary=true onClick=(action 'refresh')}}Refresh Data{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'rev')}}Reverse Sort{{/paper-button}}
+<br>
+
+<table>
+  <tr>
+    <td>
+      Info {{viewType}}:
+    </td>
+    <td>
+      {{#paper-select
+        getItems=onUserLoad label="year" options=years selected=year onChange=(action (mut year)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="month" options=months selected=month onChange=(action (mut month)) as |item|
+      }}
+       {{item}}
+      {{/paper-select}}
+      {{#paper-button raised=true primary=true onClick=(action 'setView' 'EMPLOYEES')}}EMPLOYEES{{/paper-button}}
+      {{#paper-button raised=true primary=true onClick=(action 'setView' 'DATA')}}COUNT BY MONTH{{/paper-button}}
+      {{#paper-button raised=true primary=true onClick=(action 'setView' 'STATS')}}STATS BY DAY{{/paper-button}}
+    </td>
+  </tr>
+</table>
+<br>
+
+{{#if (eq viewType 'DATA')}}
+<h2>Employee Count by Month
+  <a download="test.csv" href="data:text/plain;charset=UTF-8,{{info}}">
+    Download
+  </a></h2>
+{{{countByWeek}}}
+
+{{else if (eq viewType 'STATS')}}
+  <h2>Employee Stats by Day {{month}}/{{day}}/{{year}} [{{empListCount}}]</h2>
+
+  <table>
+    <tr>
+      <th>Category</th>
+      <th>Data</th>
+    </tr>
+
+    <tr>
+      <td>Gender</td>
+      <td>{{genderData}}</td>
+    </tr>
+    <tr>
+      <td>Degree</td>
+      <td>{{degreeData}}</td>
+    </tr>
+    <tr>
+      <td>Country</td>
+      <td>{{countryData}}</td>
+    </tr>
+    <tr>
+      <td>Immigration</td>
+      <td>{{immData}}</td>
+    </tr>
+    <tr>
+      <td>Tenure</td>
+      <td>{{tenureData}}</td>
+    </tr>
+    <tr>
+      <td>Experience</td>
+      <td>{{experienceData}}</td>
+    </tr>
+  </table><br><br><br>
+<h2>Detailed Data by Employee</h2>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>First</th>
+      <th>Last</th>
+      <th>Type</th>
+      <th>Start</th>
+      <th>Exp</th>
+      <th>Tenure</th>
+      <th>Degree</th>
+      <th>Imm</th>
+      <th>Country</th>
+      <th>Gen</th>
+    </tr>
+  {{#each empList as |data index|}}
+    <tr>
+      <td>{{addone index}}</td>
+      <td>{{data.firstname}}</td>
+      <td>{{data.lastname}}</td>
+      <td>{{data.type}}</td>
+      <td>{{data.start}}</td>
+      <td>{{data.experience}}</td>
+      <td>{{data.tenure}}</td>
+      <td>{{data.degreeTxt}}</td>
+      <td>{{data.immigration}}</td>
+      <td>{{data.country}}</td>
+      <td>{{data.gender}}</td>
+    </tr>
+  {{else}}
+    ERROR: Can't find any data<br>
+  {{/each}}
+
+  </table>
+
+{{else}}
+<h2>Employees on {{month}}/{{day}}/{{year}}: TOTAL {{totalCount}}&emsp;Current Employees({{empCount}})&emsp;Prior Employees({{exEmpCount}})</h2>
+<h2>ESG Employees: {{totalEsgCount}}&emsp;Contracted: {{totalOtherCount}}</h2>
+  <h3> Employees: {{empCount}}</h3>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>First</th>
+      <th>Last</th>
+      <th>Manager</th>
+      <th>Start</th>
+      <th>Exp</th>
+      <th>Tenure</th>
+      <th>Imm</th>
+      <th>Country</th>
+      <th>Gen</th>
+
+    </tr>
+
+    {{#each filteredEmp as |data index|}}
+      <tr>
+        <td>{{addone index}}</td>
+        <td>{{data.firstname}}</td>
+        <td>{{data.lastname}}</td>
+        <td>{{data.manager}}</td>
+        <td>{{data.start}}</td>
+        <td>{{subtract year data.experience}}</td>
+        <td>{{data.tenure}}</td>
+        <td>{{data.immigration}}</td>
+        <td>{{data.country}}</td>
+        <td>{{data.gender}}</td>
+      </tr>
+    {{else}}
+      ERROR: Can't find any data<br>
+    {{/each}}
+
+  </table><br>
+  <h3> Ex-Employees: {{exEmpCount}}</h3>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>First</th>
+      <th>Last</th>
+      <th>Manager</th>
+      <th>Start</th>
+      <th>Term</th>
+      <th>Exp</th>
+      <th>Tenure</th>
+      <th>Imm</th>
+      <th>Country</th>
+      <th>Gen</th>
+    </tr>
+
+    {{#each filteredExEmp as |data index|}}
+      <tr>
+        <td>{{addone index}}</td>
+        <td>{{data.firstname}}</td>
+        <td>{{data.lastname}}</td>
+        <td>{{data.manager}}</td>
+        <td>{{data.startDate}}</td>
+        <td>{{data.termDate}}</td>
+        <td>{{subtract year data.experience}}</td>
+        <td>{{data.tenure}}</td>
+        <td>{{data.immigration}}</td>
+        <td>{{data.country}}</td>
+        <td>{{data.gender}}</td>
+      </tr>
+    {{else}}
+      ERROR: Can't find any data<br>
+    {{/each}}
+  </table>
+{{/if}}

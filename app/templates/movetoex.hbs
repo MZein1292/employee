@@ -1,0 +1,106 @@
+{{outlet}}
+{{#paper-button raised=true primary=true onClick=(action 'refresh')}}Refresh Data{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'rev')}}Reverse Sort{{/paper-button}}
+<br>
+
+{{#if (eq showDlg "EDIT")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit {{title}}</h2>
+      {{#if (eq title 'Comment')}}
+        {{textarea value=dlgData  rows="4" cols='80' onChange=(action (mut dlgData))}}
+      {{/if}}
+      {{#if (not-eq title 'Comment')}}
+        {{paper-input placeholder=title autofocus=true value=dlgData onChange=(action (mut dlgData))}}
+      {{/if}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+<table>
+  <tr>
+    <td>
+      Filters:
+    </td>
+    <td>
+      {{#paper-select
+        getItems=onUserLoad label="Manager" options=managers2 selected=mgrFilter onChange=(action (mut mgrFilter)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="SortBy" options=sortItems selected=sortBy onChange=(action (mut sortBy)) as |item|
+      }}
+       {{item}}
+      {{/paper-select}}
+      &emsp;
+    </td>
+  </tr>
+</table>
+<br>
+
+{{#if (eq showDlg "NONE")}}
+  <!-- company,cost,hours,rate -->
+<h2> Employees</h2>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>First</th>
+        <th>Last</th>
+        <th>Manager</th>
+        {{#if user.isAdmin}}
+          <th>Move to Ex</th>
+        {{/if}}
+      </tr>
+
+      {{#each filteredEmp as |data index|}}
+        <tr>
+          <td>{{addone index}}</td>
+          <td>{{data.firstname}}</td>
+          <td>{{data.lastname}}</td>
+          <td>{{data.manager}}</td>
+          {{#if user.isAdmin}}
+            <th><button {{action 'createNewEx' data}}>Move to Ex</button></th>
+          {{/if}}
+        </tr>
+      {{else}}
+        ERROR: Can't find any data<br>
+      {{/each}}
+
+    </table><br>
+  <h2> Ex-Employees</h2>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>First</th>
+      <th>Last</th>
+      <th>Manager</th>
+      {{#if user.isAdmin}}
+        <th>Move to Emp</th>
+      {{/if}}
+    </tr>
+
+    {{#each filteredExEmp as |data index|}}
+      <tr>
+        <td>{{addone index}}</td>
+        <td>{{data.firstname}}</td>
+        <td>{{data.lastname}}</td>
+        <td>{{data.manager}}</td>
+        {{#if user.isAdmin}}
+          <th>Move to Emp</th>
+        {{/if}}
+      </tr>
+    {{else}}
+      ERROR: Can't find any data<br>
+    {{/each}}
+
+  </table>
+{{/if}}

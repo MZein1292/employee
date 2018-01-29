@@ -1,0 +1,125 @@
+<H1>Overtime by Manager</H1>
+{{outlet}}
+{{#paper-button raised=true primary=true onClick=(action 'new')}}Add New Employee{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'refresh')}}Refresh Data{{/paper-button}}
+{{#paper-button raised=true primary=true onClick=(action 'rev')}}Reverse Sort{{/paper-button}}
+{{#if user.isAdmin}}
+  {{#paper-button raised=true onClick=(action 'toggleDelete')}}{{if allowDelete 'Disable Delete'
+                                                                    'Allow Delete'}}{{/paper-button}}
+  {{#paper-button raised=true onClick=(action 'test')}}Test{{/paper-button}}
+  &emsp;
+{{/if}}
+Ignore Blanks:&nbsp;{{#paper-checkbox value=ignoreBlanks onChange=(action (mut ignoreBlanks))}}
+  {{if ignoreBlanks "yep" "nope"}}{{/paper-checkbox}}
+
+<br><br>
+
+{{#if (eq showDlg "EDIT")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit {{title}}</h2>
+      {{#if (eq title 'Comment')}}
+        {{textarea value=dlgData  rows="4" cols='80' onChange=(action (mut dlgData))}}
+      {{/if}}
+      {{#if (not-eq title 'Comment')}}
+        {{paper-input placeholder=title autofocus=true value=dlgData onChange=(action (mut dlgData))}}
+      {{/if}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+{{#if (eq showDlg "DROPDOWN")}}
+  {{#paper-dialog fullscreen=fullscreen onClose=(action "closeDlg") origin=dialogOrigin}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit {{title}}</h2>
+      {{#paper-select
+        getItems=onUserLoad label=title options=dlgDropdown selected=dlgData onChange=(action (mut dlgData)) as |item|
+      }}
+       {{item}}
+      {{/paper-select}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeDlg")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "saveDlgData")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+<table>
+  <tr>
+    <td>
+      Filters:
+    </td>
+    <td>
+      {{#paper-select
+        getItems=onUserLoad label="Manager" options=managers2 selected=mgrFilter onChange=(action (mut mgrFilter)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="SortBy" options=sortItems selected=sortby onChange=(action (mut sortby)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+      &emsp;
+      {{#paper-select
+        getItems=onUserLoad label="View" options=viewTypeList selected=viewStyle onChange=(action (mut viewStyle)) as |item|
+      }}
+        {{item}}
+      {{/paper-select}}
+    </td>
+  </tr>
+</table>
+<br><br>
+
+{{#if (eq showDlg "NONE")}}
+  {{#each managers as |mgr|}}
+    {{#if (or (eq mgrFilter mgr) (eq mgrFilter 'ALL'))}}
+      <h2>{{mgr}}</h2>
+      <table>
+        <tr>
+          <th width="2%">#</th>
+          <th width="8%">Manager</th>
+          <th width="8%">Employee</th>
+          <th width="5%">Date</th>
+          <th width="10%">Weekday OT</th>
+          <th width="10%">Weekend OT</th>
+          <th width="15%">OT Comments</th>
+          <th width="15%">Intl Travel</th>
+          <th width="10%">Acct Note</th>
+
+        </tr>
+        {{#each filtered as |data index|}}
+          {{#if (eq mgr data.manager)}}
+            {{#if (or (not ignoreBlanks) (or data.weekdayOT (or data.weekendOT
+              (or data.otComment (or data.acctNote data.intlTravel)))))}}
+            <tr>
+              <td>{{addone index}}</td>
+              <td>{{data.manager}}</td>
+              <td>{{data.firstname}} {{data.lastname}}</td>
+              <td>{{data.otDate}}</td>
+              <td {{action 'editDlg' "weekdayOT" data}}>{{data.weekdayOT}}</td>
+              <td {{action 'editDlg' "weekendOT" data}}>{{data.weekendOT}}</td>
+              <td {{action 'editDlg' "otComment" data}}>{{data.otComment}}</td>
+              <td {{action 'editDlg' "intlTravel" data}}>{{data.intlTravel}}</td>
+              <td {{action 'editDlg' "acctNote" data}}>{{data.acctNote}}</td>
+            </tr>
+            {{/if}}
+          {{/if}}
+        {{/each}}
+      </table>
+    {{/if}}
+  {{/each}}
+  <br><br>
+{{/if}}
