@@ -42,9 +42,10 @@
     "ember-load-initializers": "^1.0.0",
     "ember-paper": "^1.0.0-beta.4",
     "ember-resolver": "^4.0.0",
+    "ember-source": "~2.14.0-beta.1",
+    "ember-tether": "^1.0.0-beta.0",
     "ember-tooltips": "^2.9.2",
     "ember-truth-helpers": "^2.0.0",
-    "ember-source": "~2.14.0-beta.1",
     "emberfire": "^2.0.9",
     "loader.js": "^4.2.3"
   },
